@@ -66,4 +66,4 @@ mod utils;
 /// The result type for `datatest-stable` tests.
 pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
-pub use self::runner::{runner, Requirements};
+pub use self::runner::{runner, runner_with_opts, Requirements, TestOpts};

@@ -16,6 +16,7 @@ use std::{
 use structopt::{clap::arg_enum, StructOpt};
 use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
 
+#[doc(hidden)]
 #[derive(Debug, StructOpt)]
 #[structopt(about = "Datatest-harness for running data-driven tests")]
 pub struct TestOpts {
@@ -52,7 +53,7 @@ pub struct TestOpts {
     pub exclude_should_panic: bool,
     #[structopt(long)]
     /// NO-OP: unsupported option, exists for compatibility with the default test harness
-    test: bool,
+    pub test: bool,
     #[structopt(long)]
     /// NO-OP: unsupported option, exists for compatibility with the default test harness
     pub bench: bool,
@@ -85,7 +86,7 @@ pub struct TestOpts {
 
 arg_enum! {
     #[derive(Debug, Eq, PartialEq)]
-    enum Format {
+    pub enum Format {
         Pretty,
         Terse,
         Json,
