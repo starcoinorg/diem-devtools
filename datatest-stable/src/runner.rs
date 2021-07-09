@@ -18,29 +18,29 @@ use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
 
 #[derive(Debug, StructOpt)]
 #[structopt(about = "Datatest-harness for running data-driven tests")]
-struct TestOpts {
+pub struct TestOpts {
     /// The FILTER string is tested against the name of all tests, and only those tests whose names
     /// contain the filter are run.
-    filter: Option<String>,
+    pub filter: Option<String>,
     #[structopt(long = "exact")]
     /// Exactly match filters rather than by substring
-    filter_exact: bool,
+    pub filter_exact: bool,
     #[structopt(long, default_value = "32", env = "RUST_TEST_THREADS")]
     /// Number of threads used for running tests in parallel
-    test_threads: NonZeroUsize,
+    pub test_threads: NonZeroUsize,
     #[structopt(short = "q", long)]
     /// Output minimal information
-    quiet: bool,
+    pub quiet: bool,
     #[structopt(long)]
     /// NO-OP: unsupported option, exists for compatibility with the default test harness
-    nocapture: bool,
+    pub nocapture: bool,
     #[structopt(long)]
     /// List all tests
-    list: bool,
+    pub list: bool,
     #[structopt(long)]
     /// List or run ignored tests (always empty: it is currently not possible to mark tests as
     /// ignored)
-    ignored: bool,
+    pub ignored: bool,
     #[structopt(long)]
     /// NO-OP: unsupported option, exists for compatibility with the default test harness
     include_ignored: bool,
@@ -101,7 +101,11 @@ impl Default for Format {
 #[doc(hidden)]
 pub fn runner(reqs: &[Requirements]) {
     let options = TestOpts::from_args();
+    runner_with_opts(reqs, options)
+}
 
+#[doc(hidden)]
+pub fn runner_with_opts(reqs: &[Requirements], options: TestOpts) {
     let mut tests: Vec<Test> = if options.ignored {
         // Currently impossible to mark tests as ignored.
         // TODO: add support for this in the future, probably by supporting an "ignored" dir
@@ -132,7 +136,6 @@ pub fn runner(reqs: &[Requirements]) {
         }
     }
 }
-
 struct Test {
     testfn: Box<dyn Fn() -> Result<()> + Send>,
     name: String,
