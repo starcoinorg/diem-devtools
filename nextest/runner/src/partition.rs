@@ -69,7 +69,7 @@ impl PartitionerBuilder {
     // ---
 
     fn parse_impl(s: &str) -> anyhow::Result<Self> {
-        // Parse the string: it looks like "hash:<shard>/<total_shards>".
+        // Parser the string: it looks like "hash:<shard>/<total_shards>".
         if let Some(input) = s.strip_prefix("hash:") {
             let (shard, total_shards) =
                 parse_shards(input).context("partition must be in the format \"hash:M/N\"")?;
@@ -97,9 +97,9 @@ impl PartitionerBuilder {
 
 /// An error that occurs while parsing a `PartitionerBuilder` input.
 #[derive(Debug)]
-pub struct ParseError(anyhow::Error);
+pub struct ParserError<'a>(&'a anyhow::Error);
 
-impl fmt::Display for ParseError {
+impl<'a> fmt::Display for ParserError<'a> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let chain = self.0.chain();
         let len = chain.len();
@@ -109,7 +109,7 @@ impl fmt::Display for ParseError {
             } else if i < len - 1 {
                 writeln!(f, "({})", err)?;
             } else {
-                // Skip the last newline since that's what looks best with structopt.
+                // Skip the last newline since that's what looks best with clap.
                 write!(f, "({})", err)?;
             }
         }
@@ -118,10 +118,13 @@ impl fmt::Display for ParseError {
 }
 
 impl FromStr for PartitionerBuilder {
-    type Err = ParseError;
+    type Err = anyhow::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Self::parse_impl(s).map_err(ParseError)
+        Self::parse_impl(s).map_err(|err| {
+            println!("{}", ParserError(&err));
+            err
+        })
     }
 }
 

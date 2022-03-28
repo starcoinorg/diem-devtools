@@ -8,6 +8,7 @@ use crate::{
     test_list::{TestInstance, TestList},
 };
 use anyhow::Result;
+use clap::Parser;
 use crossbeam_channel::Sender;
 use duct::cmd;
 use nextest_config::NextestProfile;
@@ -24,18 +25,17 @@ use std::{
     },
     time::{Duration, SystemTime},
 };
-use structopt::StructOpt;
 
 /// Test runner options.
-#[derive(Debug, Default, StructOpt)]
-#[structopt(rename_all = "kebab-case")]
+#[derive(Debug, Default, Parser)]
+#[clap(rename_all = "kebab-case")]
 pub struct TestRunnerOpts {
     /// Number of retries for failing tests [default: from profile]
-    #[structopt(long)]
+    #[clap(long)]
     pub retries: Option<usize>,
 
     /// Number of tests to run simultaneously [default: logical CPU count]
-    #[structopt(long, alias = "test-threads")]
+    #[clap(long, alias = "test-threads")]
     pub test_threads: Option<usize>,
 }
 

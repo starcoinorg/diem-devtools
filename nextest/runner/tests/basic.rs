@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
 //! Basic tests for the test runner.
-
 use anyhow::Result;
 use camino::Utf8Path;
 use cargo_metadata::Message;
@@ -161,7 +160,6 @@ fn test_list_tests() -> Result<()> {
 
     Ok(())
 }
-
 #[derive(Clone, Debug)]
 struct InstanceValue<'a> {
     binary_id: &'a str,

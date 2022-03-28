@@ -6,7 +6,7 @@ license = "Apache-2.0 OR MIT"
 edition = "2018"
 
 [dependencies]
-aho-corasick = "0.7.15"
+aho-corasick = "0.7.18"
 anyhow = "1.0.40"
 atty = "0.2.14"
 camino = { version = "1.0.4", features = ["serde1"] }
@@ -22,6 +22,7 @@ signal-hook = "0.3.8"
 structopt = "0.3.21"
 termcolor = "1.1.2"
 twox-hash = { version = "1.6.0", default-features = false }
+clap = {version = "3", features = ["derive"]}
 
 nextest-config = { path = "../config" }
 quick-junit = { path = "../../quick-junit" }

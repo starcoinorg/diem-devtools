@@ -232,7 +232,7 @@ impl TestList {
                 test_name.into(),
                 RustTestInfo {
                     ignored: false,
-                    filter_match: non_ignored_filter.filter_match(&test_name, false),
+                    filter_match: non_ignored_filter.filter_match(test_name, false),
                 },
             );
         }
@@ -244,7 +244,7 @@ impl TestList {
                 test_name.into(),
                 RustTestInfo {
                     ignored: true,
-                    filter_match: ignored_filter.filter_match(&test_name, true),
+                    filter_match: ignored_filter.filter_match(test_name, true),
                 },
             );
         }
@@ -265,7 +265,7 @@ impl TestList {
         ))
     }
 
-    /// Parses the output of --list --format terse and returns a sorted list.
+    /// Parsers the output of --list --format terse and returns a sorted list.
     fn parse(list_output: &str) -> Result<Vec<&'_ str>> {
         let mut list = Self::parse_impl(list_output).collect::<Result<Vec<_>>>()?;
         list.sort_unstable();
