@@ -11,31 +11,31 @@ use crate::{
 };
 use anyhow::{bail, Context, Result};
 use camino::{Utf8Path, Utf8PathBuf};
+use clap::Parser;
 use duct::cmd;
 use nextest_config::{errors::ConfigReadError, NextestConfig};
-use structopt::StructOpt;
 
 /// This test runner accepts a Rust test binary and does fancy things with it.
 ///
 /// TODO: expand on this
-#[derive(Debug, StructOpt)]
-#[structopt(rename_all = "kebab-case")]
+#[derive(Debug, Parser)]
+#[clap(rename_all = "kebab-case")]
 pub struct Opts {
-    #[structopt(long, default_value)]
+    #[clap(long, default_value_t)]
     /// Coloring: always, auto, never
     color: Color,
 
-    #[structopt(flatten)]
+    #[clap(flatten)]
     config_opts: ConfigOpts,
 
-    #[structopt(subcommand)]
+    #[clap(subcommand)]
     command: Command,
 }
 
-#[derive(Debug, StructOpt)]
+#[derive(Debug, Parser)]
 pub struct ConfigOpts {
     /// Config file [default: <workspace-root>/Nextest.toml]
-    #[structopt(long)]
+    #[clap(long)]
     pub config_file: Option<Utf8PathBuf>,
 }
 
@@ -46,35 +46,35 @@ impl ConfigOpts {
     }
 }
 
-#[derive(Debug, StructOpt)]
+#[derive(Debug, Parser)]
 pub enum Command {
     /// List tests in binary
     ListTests {
         /// Output format
-        #[structopt(short = "T", long, default_value, possible_values = & OutputFormat::variants(), case_insensitive = true)]
+        #[clap(short = 'T', long, default_value_t, possible_values = OutputFormat::variants(), ignore_case = true)]
         format: OutputFormat,
 
-        #[structopt(flatten)]
+        #[clap(flatten)]
         bin_filter: TestBinFilter,
     },
     /// Run tests
     Run {
         /// nextest profile to use
-        #[structopt(long, short = "P")]
+        #[clap(long, short = 'P')]
         profile: Option<String>,
-        #[structopt(flatten)]
+        #[clap(flatten)]
         bin_filter: TestBinFilter,
-        #[structopt(flatten)]
+        #[clap(flatten)]
         runner_opts: TestRunnerOpts,
     },
 }
 
-#[derive(Debug, StructOpt)]
-#[structopt(rename_all = "kebab-case")]
+#[derive(Debug, Parser)]
+#[clap(rename_all = "kebab-case")]
 pub struct TestBinFilter {
     /// Path to test binary
-    #[structopt(
-        short = "b",
+    #[clap(
+        short = 'b',
         long,
         required = true,
         min_values = 1,
@@ -83,11 +83,11 @@ pub struct TestBinFilter {
     pub test_bin: Vec<Utf8PathBuf>,
 
     /// Run ignored tests
-    #[structopt(long, possible_values = &RunIgnored::variants(), default_value, case_insensitive = true)]
+    #[clap(long, possible_values = RunIgnored::variants(), default_value_t, ignore_case = true)]
     pub run_ignored: RunIgnored,
 
     /// Test partition, e.g. hash:1/2 or count:2/3
-    #[structopt(long)]
+    #[clap(long)]
     pub partition: Option<PartitionerBuilder>,
 
     // TODO: add regex-based filtering in the future?

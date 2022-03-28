@@ -265,7 +265,7 @@ impl TestList {
         ))
     }
 
-    /// Parses the output of --list --format terse and returns a sorted list.
+    /// Parsers the output of --list --format terse and returns a sorted list.
     fn parse(list_output: &str) -> Result<Vec<&'_ str>> {
         let mut list = Self::parse_impl(list_output).collect::<Result<Vec<_>>>()?;
         list.sort_unstable();

@@ -11,19 +11,42 @@ use anyhow::{Context, Result};
 use camino::Utf8Path;
 use nextest_config::{FailureOutput, NextestProfile};
 use std::{
-    fmt, io,
+    fmt::{self, Display},
+    io,
     io::Write,
+    str::FromStr,
     time::{Duration, SystemTime},
 };
-use structopt::clap::arg_enum;
+
 use termcolor::{BufferWriter, ColorChoice, ColorSpec, NoColor, WriteColor};
 
-arg_enum! {
-    #[derive(Copy, Clone, Debug, Eq, PartialEq)]
-    pub enum Color {
-        Always,
-        Auto,
-        Never,
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+pub enum Color {
+    Always,
+    Auto,
+    Never,
+}
+
+impl FromStr for Color {
+    type Err = anyhow::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "always" => Ok(Color::Always),
+            "auto" => Ok(Color::Auto),
+            "never" => Ok(Color::Never),
+            _ => Err(anyhow::anyhow!("invalid color: {}", s)),
+        }
+    }
+}
+
+impl Display for Color {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Color::Always => write!(f, "always"),
+            Color::Auto => write!(f, "auto"),
+            Color::Never => write!(f, "never"),
+        }
     }
 }
 
