@@ -6,6 +6,7 @@
 use crate::{utils, Result};
 use clap::Parser;
 use std::{
+    collections::BTreeMap,
     fmt::Display,
     io::{self, Write},
     num::NonZeroUsize,
@@ -346,25 +347,28 @@ impl TestSummary {
 
 #[doc(hidden)]
 pub struct Requirements {
-    test: fn(&Path) -> Result<()>,
+    test: fn(&Path, &BTreeMap<String, String>) -> Result<()>,
     test_name: String,
     root: String,
     pattern: String,
+    data: BTreeMap<String, String>,
 }
 
 impl Requirements {
     #[doc(hidden)]
     pub fn new(
-        test: fn(&Path) -> Result<()>,
+        test: fn(&Path, &BTreeMap<String, String>) -> Result<()>,
         test_name: String,
         root: String,
         pattern: String,
+        data: BTreeMap<String, String>,
     ) -> Self {
         Self {
             test,
             test_name,
             root,
             pattern,
+            data,
         }
     }
 
@@ -382,10 +386,11 @@ impl Requirements {
         let tests: Vec<_> = utils::iterate_directory(&root)
             .filter_map(|path| {
                 let input_path = path.to_string_lossy();
+                let input_data = self.data.clone();
                 if re.is_match(&input_path) {
                     let testfn = self.test;
                     let name = utils::derive_test_name(&root, &path, &self.test_name);
-                    let testfn = Box::new(move || (testfn)(&path));
+                    let testfn = Box::new(move || (testfn)(&path, &input_data));
 
                     Some(Test { testfn, name })
                 } else {
